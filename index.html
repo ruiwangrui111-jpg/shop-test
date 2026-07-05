@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>气泡饭堂 - 扫码点餐</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">桌号 A12 · 堂食</p>
+          <h1>气泡饭堂</h1>
+          <p class="subtitle">今日热卖 88 折，满 58 送柠檬茶</p>
+        </div>
+        <button class="search-button" type="button" aria-label="搜索菜品">
+          <span>⌕</span>
+        </button>
+      </header>
+
+      <section class="promo-strip" aria-label="活动">
+        <button class="promo-card strong" type="button" data-promo-dish="cheese-chicken-rice">
+          <span>NEW</span>
+          <strong>芝士瀑布鸡排饭</strong>
+          <small>限时上新</small>
+        </button>
+        <button class="promo-card" type="button" data-promo-dish="duo-combo">
+          <span>HOT</span>
+          <strong>双人能量套餐</strong>
+          <small>已售 126</small>
+        </button>
+      </section>
+
+      <nav class="category-tabs" aria-label="菜品分类" id="categoryTabs"></nav>
+
+      <section class="menu-area">
+        <div class="menu-heading">
+          <div>
+            <p id="activeCategoryLabel">热卖推荐</p>
+            <h2 id="activeCategoryTitle">今天就吃点开心的</h2>
+          </div>
+          <span id="dishCount">0 款</span>
+        </div>
+        <div class="dish-list" id="dishList"></div>
+      </section>
+    </main>
+
+    <aside class="cart-bar" aria-label="购物车">
+      <button class="cart-summary" type="button" id="openCart">
+        <span class="cart-icon">袋</span>
+        <span>
+          <strong id="cartCount">未选餐</strong>
+          <small id="cartHint">加点喜欢的菜吧</small>
+        </span>
+      </button>
+      <div class="cart-total">
+        <strong id="cartTotal">¥0</strong>
+        <button class="checkout-button" type="button" id="checkoutButton" disabled>去下单</button>
+      </div>
+    </aside>
+
+    <div class="overlay" id="overlay" hidden></div>
+
+    <section class="drawer" id="cartDrawer" aria-label="购物车明细" aria-hidden="true">
+      <div class="drawer-handle"></div>
+      <div class="drawer-header">
+        <div>
+          <p>购物车</p>
+          <h2>已选菜品</h2>
+        </div>
+        <button class="text-button" type="button" id="clearCart">清空</button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <label class="note-field">
+        <span>订单备注</span>
+        <input id="orderNote" type="text" maxlength="40" placeholder="少辣、不要香菜、餐具数量..." />
+      </label>
+      <button class="drawer-checkout" type="button" id="drawerCheckout">确认下单</button>
+    </section>
+
+    <section class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
+      <div class="modal-card">
+        <button class="close-button" type="button" id="closeModal" aria-label="关闭确认订单">×</button>
+        <p class="eyebrow">桌号 A12</p>
+        <h2 id="confirmTitle">确认订单</h2>
+        <div class="confirm-list" id="confirmList"></div>
+        <div class="confirm-note" id="confirmNote"></div>
+        <div class="confirm-total">
+          <span>合计</span>
+          <strong id="confirmTotal">¥0</strong>
+        </div>
+        <button class="primary-button" type="button" id="placeOrder">确认提交</button>
+      </div>
+    </section>
+
+    <section class="success-toast" id="successToast" aria-live="polite" aria-hidden="true">
+      <div>
+        <strong>下单成功</strong>
+        <p>厨房已收到 A12 桌订单，请稍等片刻。</p>
+      </div>
+      <div class="success-actions">
+        <button class="ghost-success" type="button" id="clearOrder">清空订单</button>
+        <button type="button" id="continueOrder">继续点餐</button>
+      </div>
+    </section>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
