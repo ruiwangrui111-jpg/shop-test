@@ -377,7 +377,9 @@ function renderViews() {
   els.searchPanel.hidden =
     state.activeView !== "menu" || els.toggleSearch.getAttribute("aria-expanded") !== "true";
   els.historyView.hidden = state.activeView !== "history";
-  els.staffView.hidden = state.activeView !== "staff";
+  if (els.staffView) {
+    els.staffView.hidden = state.activeView !== "staff";
+  }
 }
 
 function renderOrderCard(order, options = {}) {
@@ -433,6 +435,7 @@ function renderHistory() {
 }
 
 function renderStaff() {
+  if (!els.staffCount || !els.staffStats || !els.staffList) return;
   const counts = state.orders.reduce(
     (acc, order) => {
       acc[order.status] += 1;
@@ -647,16 +650,18 @@ els.clearOrder.addEventListener("click", () => {
 });
 els.continueOrder.addEventListener("click", hideSuccess);
 
-els.staffList.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-order-status]");
-  if (!button) return;
-  const order = state.orders.find((item) => item.id === button.dataset.orderStatus);
-  if (!order) return;
-  order.status = getNextStatus(order.status);
-  saveOrders();
-  renderStaff();
-  renderHistory();
-});
+if (els.staffList) {
+  els.staffList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-order-status]");
+    if (!button) return;
+    const order = state.orders.find((item) => item.id === button.dataset.orderStatus);
+    if (!order) return;
+    order.status = getNextStatus(order.status);
+    saveOrders();
+    renderStaff();
+    renderHistory();
+  });
+}
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;

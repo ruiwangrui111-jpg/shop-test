@@ -227,7 +227,7 @@ h1 {
 
 .view-switcher {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin: 0 0 12px;
   padding: 6px;
@@ -444,6 +444,27 @@ h1 {
   color: #fff;
   font-size: 13px;
   font-weight: 900;
+}
+
+.staff-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.staff-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
 }
 
 .menu-heading {

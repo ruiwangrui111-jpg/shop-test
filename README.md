@@ -6,6 +6,10 @@ Live demo:
 
 https://ruiwangrui111-jpg.github.io/shop-test/
 
+Staff demo:
+
+https://ruiwangrui111-jpg.github.io/shop-test/staff.html
+
 Repository:
 
 https://github.com/ruiwangrui111-jpg/shop-test
@@ -14,7 +18,7 @@ https://github.com/ruiwangrui111-jpg/shop-test
 
 This demo starts from a simple idea: "build a restaurant ordering page." Through AI-assisted planning, implementation, browser testing, feedback, and iteration, it became a usable static ordering prototype.
 
-The page is designed for a QR-code ordering scenario. Customers can browse dishes, switch categories, add items to a cart, review order details, add a note, confirm the order, review local order history, and switch to a staff-facing order board.
+The project is designed for a QR-code ordering scenario with separated customer and staff entry points. Customers can browse dishes, switch categories, add items to a cart, review order details, add a note, confirm the order, and review local order history. Staff can open a separate order board to manage submitted orders.
 
 ## Features
 
@@ -27,7 +31,7 @@ The page is designed for a QR-code ordering scenario. Customers can browse dishe
 - Success state with continue-order and clear-order actions
 - Promo cards that jump to the related menu item
 - Local order history stored with `localStorage`
-- Staff order board with pending, in-progress, and completed states
+- Separate `staff.html` order board with pending, in-progress, and completed states
 - Order status transitions for lightweight restaurant workflow simulation
 - Static HTML, CSS, and JavaScript with no build step
 
@@ -46,9 +50,13 @@ One example iteration: the top "HOT" combo card looked clickable but did not do 
 
 Another iteration added a product workflow layer: submitted orders are saved locally, customers can review order history, and staff can move orders from pending to in-progress to completed.
 
+The staff surface was later separated into `staff.html` so the customer-facing QR ordering page does not expose staff operations.
+
 ## How To Run Locally
 
 Open `index.html` directly in a browser.
+
+Open `staff.html` to view the staff order board.
 
 No install, server, or build command is required.
 

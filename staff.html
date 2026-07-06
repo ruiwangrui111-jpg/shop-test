@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>气泡饭堂 - 店员订单看板</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">店员工作台 · A12 桌</p>
+          <h1>订单看板</h1>
+          <p class="subtitle">查看顾客提交的订单，并更新制作状态</p>
+        </div>
+        <a class="staff-link" href="./index.html">点餐页</a>
+      </header>
+
+      <div class="staff-link-row">
+        <span class="panel-count" id="staffCount">0 单</span>
+        <button class="text-button" type="button" id="refreshOrders">刷新订单</button>
+      </div>
+
+      <section class="panel-view" id="staffView">
+        <div class="panel-heading">
+          <div>
+            <p>店员面板</p>
+            <h2>A12 桌订单看板</h2>
+          </div>
+        </div>
+        <div class="staff-stats" id="staffStats"></div>
+        <div class="order-list" id="staffList"></div>
+      </section>
+    </main>
+
+    <script src="./staff.js"></script>
+  </body>
+</html>
