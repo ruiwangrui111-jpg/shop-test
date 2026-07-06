@@ -147,14 +147,20 @@ const dishes = [
 ];
 
 const state = {
+  activeView: "menu",
   activeCategory: "hot",
   cart: {},
   note: "",
   spotlightDish: "",
+  orders: loadOrders(),
 };
 
 const els = {
+  viewTabs: document.querySelectorAll("[data-view]"),
   promoStrip: document.querySelector(".promo-strip"),
+  menuView: document.querySelector("#menuView"),
+  historyView: document.querySelector("#historyView"),
+  staffView: document.querySelector("#staffView"),
   categoryTabs: document.querySelector("#categoryTabs"),
   activeCategoryLabel: document.querySelector("#activeCategoryLabel"),
   activeCategoryTitle: document.querySelector("#activeCategoryTitle"),
@@ -163,6 +169,7 @@ const els = {
   cartCount: document.querySelector("#cartCount"),
   cartHint: document.querySelector("#cartHint"),
   cartTotal: document.querySelector("#cartTotal"),
+  cartBar: document.querySelector("#cartBar"),
   openCart: document.querySelector("#openCart"),
   checkoutButton: document.querySelector("#checkoutButton"),
   overlay: document.querySelector("#overlay"),
@@ -180,7 +187,57 @@ const els = {
   successToast: document.querySelector("#successToast"),
   clearOrder: document.querySelector("#clearOrder"),
   continueOrder: document.querySelector("#continueOrder"),
+  clearHistory: document.querySelector("#clearHistory"),
+  historyList: document.querySelector("#historyList"),
+  staffCount: document.querySelector("#staffCount"),
+  staffStats: document.querySelector("#staffStats"),
+  staffList: document.querySelector("#staffList"),
 };
+
+function loadOrders() {
+  try {
+    return JSON.parse(localStorage.getItem("restaurantOrders") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveOrders() {
+  localStorage.setItem("restaurantOrders", JSON.stringify(state.orders));
+}
+
+function formatTime(value) {
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function getStatusLabel(status) {
+  return {
+    pending: "待制作",
+    making: "制作中",
+    done: "已完成",
+  }[status] || "待制作";
+}
+
+function getNextStatus(status) {
+  return {
+    pending: "making",
+    making: "done",
+    done: "pending",
+  }[status] || "making";
+}
+
+function getNextStatusAction(status) {
+  return {
+    pending: "开始制作",
+    making: "标记完成",
+    done: "重新打开",
+  }[status] || "开始制作";
+}
 
 function getVisibleDishes() {
   if (state.activeCategory === "hot") {
@@ -216,6 +273,12 @@ function setQty(id, nextQty) {
   } else {
     state.cart[id] = nextQty;
   }
+  render();
+}
+
+function setView(view) {
+  state.activeView = view;
+  hideSuccess();
   render();
 }
 
@@ -275,6 +338,93 @@ function renderCartBar() {
   els.drawerCheckout.disabled = disabled;
 }
 
+function renderViews() {
+  els.viewTabs.forEach((tab) => {
+    tab.classList.toggle("active", tab.dataset.view === state.activeView);
+  });
+  els.menuView.hidden = state.activeView !== "menu";
+  els.categoryTabs.hidden = state.activeView !== "menu";
+  els.cartBar.hidden = state.activeView !== "menu";
+  els.historyView.hidden = state.activeView !== "history";
+  els.staffView.hidden = state.activeView !== "staff";
+}
+
+function renderOrderCard(order, options = {}) {
+  const statusClass = order.status === "making" ? "making" : order.status === "done" ? "done" : "";
+  return `
+    <article class="order-card">
+      <div class="order-card-head">
+        <div>
+          <h3>${order.id}</h3>
+          <p class="order-meta">${order.table} · ${formatTime(order.createdAt)}</p>
+        </div>
+        <span class="status-badge ${statusClass}">${getStatusLabel(order.status)}</span>
+      </div>
+      <ul class="order-items">
+        ${order.items
+          .map(
+            (item) => `
+              <li>
+                <span>${item.name} × ${item.qty}</span>
+                <strong>${money(item.price * item.qty)}</strong>
+              </li>
+            `,
+          )
+          .join("")}
+      </ul>
+      ${order.note ? `<p class="order-note">备注：${order.note}</p>` : ""}
+      <div class="order-card-total">
+        <span>${order.items.reduce((sum, item) => sum + item.qty, 0)} 件菜品</span>
+        <strong>${money(order.total)}</strong>
+      </div>
+      ${
+        options.staff
+          ? `<div class="order-actions">
+              <button class="status-button" type="button" data-order-status="${order.id}">
+                ${getNextStatusAction(order.status)}
+              </button>
+            </div>`
+          : ""
+      }
+    </article>
+  `;
+}
+
+function renderHistory() {
+  if (state.orders.length === 0) {
+    els.historyList.innerHTML = `<div class="empty-state">还没有历史订单，下一单会自动保存在这里。</div>`;
+    return;
+  }
+  els.historyList.innerHTML = [...state.orders]
+    .reverse()
+    .map((order) => renderOrderCard(order))
+    .join("");
+}
+
+function renderStaff() {
+  const counts = state.orders.reduce(
+    (acc, order) => {
+      acc[order.status] += 1;
+      return acc;
+    },
+    { pending: 0, making: 0, done: 0 },
+  );
+  els.staffCount.textContent = `${state.orders.length} 单`;
+  els.staffStats.innerHTML = `
+    <div class="stat-card"><strong>${counts.pending}</strong><span>待制作</span></div>
+    <div class="stat-card"><strong>${counts.making}</strong><span>制作中</span></div>
+    <div class="stat-card"><strong>${counts.done}</strong><span>已完成</span></div>
+  `;
+  if (state.orders.length === 0) {
+    els.staffList.innerHTML = `<div class="empty-state">暂无订单。顾客提交后会出现在这里。</div>`;
+    return;
+  }
+  els.staffList.innerHTML = [...state.orders]
+    .reverse()
+    .map((order) => renderOrderCard(order, { staff: true }))
+    .join("");
+}
+
 function renderCartDrawer() {
   const items = getCartItems();
   if (items.length === 0) {
@@ -319,10 +469,13 @@ function renderConfirm() {
 }
 
 function render() {
+  renderViews();
   renderCategories();
   renderDishes();
   renderCartBar();
   renderCartDrawer();
+  renderHistory();
+  renderStaff();
 }
 
 function showDishFromPromo(dishId) {
@@ -371,9 +524,30 @@ function closeConfirm() {
 }
 
 function showSuccess() {
+  const items = getCartItems();
+  if (items.length > 0) {
+    state.orders.push({
+      id: `A12-${String(state.orders.length + 1).padStart(3, "0")}`,
+      table: "A12",
+      createdAt: Date.now(),
+      status: "pending",
+      note: els.orderNote.value.trim(),
+      total: getCartTotal(),
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        qty: item.qty,
+      })),
+    });
+    saveOrders();
+    state.cart = {};
+    els.orderNote.value = "";
+  }
   closeConfirm();
   els.successToast.classList.add("show");
   els.successToast.setAttribute("aria-hidden", "false");
+  render();
 }
 
 function hideSuccess() {
@@ -387,6 +561,10 @@ els.categoryTabs.addEventListener("click", (event) => {
   state.activeCategory = button.dataset.category;
   state.spotlightDish = "";
   render();
+});
+
+els.viewTabs.forEach((tab) => {
+  tab.addEventListener("click", () => setView(tab.dataset.view));
 });
 
 els.promoStrip.addEventListener("click", (event) => {
@@ -409,6 +587,11 @@ els.clearCart.addEventListener("click", () => {
   state.cart = {};
   render();
 });
+els.clearHistory.addEventListener("click", () => {
+  state.orders = [];
+  saveOrders();
+  render();
+});
 els.checkoutButton.addEventListener("click", openConfirm);
 els.drawerCheckout.addEventListener("click", openConfirm);
 els.closeModal.addEventListener("click", closeConfirm);
@@ -420,6 +603,17 @@ els.clearOrder.addEventListener("click", () => {
   render();
 });
 els.continueOrder.addEventListener("click", hideSuccess);
+
+els.staffList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-order-status]");
+  if (!button) return;
+  const order = state.orders.find((item) => item.id === button.dataset.orderStatus);
+  if (!order) return;
+  order.status = getNextStatus(order.status);
+  saveOrders();
+  renderStaff();
+  renderHistory();
+});
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;

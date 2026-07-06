@@ -32,9 +32,15 @@
         </button>
       </section>
 
+      <nav class="view-switcher" aria-label="页面视图">
+        <button class="view-tab active" type="button" data-view="menu">点餐</button>
+        <button class="view-tab" type="button" data-view="history">订单历史</button>
+        <button class="view-tab" type="button" data-view="staff">店员面板</button>
+      </nav>
+
       <nav class="category-tabs" aria-label="菜品分类" id="categoryTabs"></nav>
 
-      <section class="menu-area">
+      <section class="menu-area" id="menuView">
         <div class="menu-heading">
           <div>
             <p id="activeCategoryLabel">热卖推荐</p>
@@ -44,9 +50,32 @@
         </div>
         <div class="dish-list" id="dishList"></div>
       </section>
+
+      <section class="panel-view" id="historyView" hidden>
+        <div class="panel-heading">
+          <div>
+            <p>历史订单</p>
+            <h2>你的点餐记录</h2>
+          </div>
+          <button class="text-button" type="button" id="clearHistory">清空历史</button>
+        </div>
+        <div class="order-list" id="historyList"></div>
+      </section>
+
+      <section class="panel-view" id="staffView" hidden>
+        <div class="panel-heading">
+          <div>
+            <p>店员面板</p>
+            <h2>A12 桌订单看板</h2>
+          </div>
+          <span class="panel-count" id="staffCount">0 单</span>
+        </div>
+        <div class="staff-stats" id="staffStats"></div>
+        <div class="order-list" id="staffList"></div>
+      </section>
     </main>
 
-    <aside class="cart-bar" aria-label="购物车">
+    <aside class="cart-bar" id="cartBar" aria-label="购物车">
       <button class="cart-summary" type="button" id="openCart">
         <span class="cart-icon">袋</span>
         <span>

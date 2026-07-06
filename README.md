@@ -14,7 +14,7 @@ https://github.com/ruiwangrui111-jpg/shop-test
 
 This demo starts from a simple idea: "build a restaurant ordering page." Through AI-assisted planning, implementation, browser testing, feedback, and iteration, it became a usable static ordering prototype.
 
-The page is designed for a QR-code ordering scenario. Customers can browse dishes, switch categories, add items to a cart, review order details, add a note, confirm the order, and see a success state.
+The page is designed for a QR-code ordering scenario. Customers can browse dishes, switch categories, add items to a cart, review order details, add a note, confirm the order, review local order history, and switch to a staff-facing order board.
 
 ## Features
 
@@ -26,6 +26,9 @@ The page is designed for a QR-code ordering scenario. Customers can browse dishe
 - Order confirmation modal
 - Success state with continue-order and clear-order actions
 - Promo cards that jump to the related menu item
+- Local order history stored with `localStorage`
+- Staff order board with pending, in-progress, and completed states
+- Order status transitions for lightweight restaurant workflow simulation
 - Static HTML, CSS, and JavaScript with no build step
 
 ## Vibe Coding Process
@@ -40,6 +43,8 @@ This project demonstrates the vibe coding workflow:
 6. Initialize Git, push to GitHub, and publish with GitHub Pages.
 
 One example iteration: the top "HOT" combo card looked clickable but did not do anything. After browser feedback, it was updated so tapping the promo card switches to the combo category and highlights the related dish.
+
+Another iteration added a product workflow layer: submitted orders are saved locally, customers can review order history, and staff can move orders from pending to in-progress to completed.
 
 ## How To Run Locally
 
@@ -56,4 +61,4 @@ No install, server, or build command is required.
 
 ## Notes
 
-This is a static prototype for demo and interview presentation purposes. It does not include a backend, real payment, account login, or persistent order storage.
+This is a static prototype for demo and interview presentation purposes. It does not include a backend, real payment, or account login. Order history is persisted locally in the browser with `localStorage`.
