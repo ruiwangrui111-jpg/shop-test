@@ -151,12 +151,17 @@ const state = {
   activeCategory: "hot",
   cart: {},
   note: "",
+  searchTerm: "",
   spotlightDish: "",
   orders: loadOrders(),
 };
 
 const els = {
   viewTabs: document.querySelectorAll("[data-view]"),
+  toggleSearch: document.querySelector("#toggleSearch"),
+  searchPanel: document.querySelector("#searchPanel"),
+  dishSearch: document.querySelector("#dishSearch"),
+  clearSearch: document.querySelector("#clearSearch"),
   promoStrip: document.querySelector(".promo-strip"),
   menuView: document.querySelector("#menuView"),
   historyView: document.querySelector("#historyView"),
@@ -240,10 +245,15 @@ function getNextStatusAction(status) {
 }
 
 function getVisibleDishes() {
-  if (state.activeCategory === "hot") {
-    return dishes.filter((dish) => dish.hot);
-  }
-  return dishes.filter((dish) => dish.category === state.activeCategory);
+  const categoryDishes =
+    state.activeCategory === "hot"
+      ? dishes.filter((dish) => dish.hot)
+      : dishes.filter((dish) => dish.category === state.activeCategory);
+  const keyword = state.searchTerm.trim().toLowerCase();
+  if (!keyword) return categoryDishes;
+  return categoryDishes.filter((dish) =>
+    [dish.name, dish.desc, dish.category, ...dish.tags].some((value) => value.toLowerCase().includes(keyword)),
+  );
 }
 
 function getCartItems() {
@@ -282,6 +292,21 @@ function setView(view) {
   render();
 }
 
+function toggleSearchPanel() {
+  const nextOpen = els.searchPanel.hidden;
+  els.searchPanel.hidden = !nextOpen;
+  els.toggleSearch.setAttribute("aria-expanded", String(nextOpen));
+  state.activeView = "menu";
+  if (nextOpen) {
+    render();
+    requestAnimationFrame(() => els.dishSearch.focus());
+  } else {
+    state.searchTerm = "";
+    els.dishSearch.value = "";
+    render();
+  }
+}
+
 function renderCategories() {
   els.categoryTabs.innerHTML = categories
     .map(
@@ -298,8 +323,12 @@ function renderDishes() {
   const category = categories.find((item) => item.id === state.activeCategory);
   const visibleDishes = getVisibleDishes();
   els.activeCategoryLabel.textContent = category.label;
-  els.activeCategoryTitle.textContent = category.title;
+  els.activeCategoryTitle.textContent = state.searchTerm ? `搜索「${state.searchTerm}」` : category.title;
   els.dishCount.textContent = `${visibleDishes.length} 款`;
+  if (visibleDishes.length === 0) {
+    els.dishList.innerHTML = `<div class="empty-state">没有找到相关菜品，换个关键词试试。</div>`;
+    return;
+  }
   els.dishList.innerHTML = visibleDishes
     .map((dish) => {
       const qty = state.cart[dish.id] || 0;
@@ -345,6 +374,8 @@ function renderViews() {
   els.menuView.hidden = state.activeView !== "menu";
   els.categoryTabs.hidden = state.activeView !== "menu";
   els.cartBar.hidden = state.activeView !== "menu";
+  els.searchPanel.hidden =
+    state.activeView !== "menu" || els.toggleSearch.getAttribute("aria-expanded") !== "true";
   els.historyView.hidden = state.activeView !== "history";
   els.staffView.hidden = state.activeView !== "staff";
 }
@@ -561,6 +592,18 @@ els.categoryTabs.addEventListener("click", (event) => {
   state.activeCategory = button.dataset.category;
   state.spotlightDish = "";
   render();
+});
+
+els.toggleSearch.addEventListener("click", toggleSearchPanel);
+els.dishSearch.addEventListener("input", () => {
+  state.searchTerm = els.dishSearch.value;
+  renderDishes();
+});
+els.clearSearch.addEventListener("click", () => {
+  state.searchTerm = "";
+  els.dishSearch.value = "";
+  renderDishes();
+  els.dishSearch.focus();
 });
 
 els.viewTabs.forEach((tab) => {

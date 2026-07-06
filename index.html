@@ -14,10 +14,18 @@
           <h1>气泡饭堂</h1>
           <p class="subtitle">今日热卖 88 折，满 58 送柠檬茶</p>
         </div>
-        <button class="search-button" type="button" aria-label="搜索菜品">
+        <button class="search-button" type="button" id="toggleSearch" aria-label="搜索菜品" aria-expanded="false">
           <span>⌕</span>
         </button>
       </header>
+
+      <div class="search-panel" id="searchPanel" hidden>
+        <label for="dishSearch">搜索菜品</label>
+        <div class="search-field">
+          <input id="dishSearch" type="search" placeholder="输入菜名、标签或描述" autocomplete="off" />
+          <button type="button" id="clearSearch">清除</button>
+        </div>
+      </div>
 
       <section class="promo-strip" aria-label="活动">
         <button class="promo-card strong" type="button" data-promo-dish="cheese-chicken-rice">
